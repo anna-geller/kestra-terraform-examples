@@ -45,6 +45,10 @@ resource "kestra_flow" "sqsPublishMessage" {
   content   = <<EOF
 id: sqsPublishMessage
 namespace: ${var.namespace}
+inputs:
+  - name: message
+    type: STRING
+    defaults: "Hi from SQS!"
 tasks:
   - id: publishMessage
     type: io.kestra.plugin.aws.sqs.Publish
@@ -53,7 +57,31 @@ tasks:
     region: ${var.region}
     queueUrl: ${aws_sqs_queue.queue.id}
     from:
-      data: "Hello World from Kestra and SQS"
+      data: "{{inputs.message}}"
+EOF
+}
+
+resource "kestra_flow" "sqsConsumeMessages" {
+  keep_original_source = true
+  flow_id    = "sqsConsumeMessages"
+  namespace = var.namespace
+  content   = <<EOF
+id: sqsConsumeMessages
+namespace: ${var.namespace}
+tasks:
+  - id: pollSqsForMessages
+    type: io.kestra.plugin.aws.sqs.Consume
+    accessKeyId: "{{envs.aws_access_key_id}}"
+    secretKeyId: "{{envs.aws_secret_access_key}}"
+    region: ${var.region}
+    queueUrl: ${aws_sqs_queue.queue.id}
+    maxRecords: 1
+  - id: print
+    type: io.kestra.core.tasks.scripts.Bash
+    inputFiles:
+      messages.ion: "{{outputs.pollSqsForMessages.uri}}"
+    commands:
+      - cat messages.ion
 EOF
 }
 
@@ -65,19 +93,12 @@ resource "kestra_flow" "sqsReactToMessage" {
 id: sqsReactToMessage
 namespace: ${var.namespace}
 tasks:
-  - id: consumeMessage
-    type: io.kestra.plugin.aws.sqs.Consume
-    accessKeyId: "{{envs.aws_access_key_id}}"
-    secretKeyId: "{{envs.aws_secret_access_key}}"
-    region: ${var.region}
-    queueUrl: ${aws_sqs_queue.queue.id}
-    maxRecords: 1
-  - id: print
+  - id: printMessage
     type: io.kestra.core.tasks.scripts.Bash
     inputFiles:
-      msg.ion: "{{outputs.consumeMessage.uri}}"
+      message.ion: "{{trigger.uri}}"
     commands:
-      - cat msg.ion
+      - cat message.ion
 triggers:
   - id: sqs
     type: io.kestra.plugin.aws.sqs.Trigger
