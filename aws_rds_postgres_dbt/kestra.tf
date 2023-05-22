@@ -9,6 +9,7 @@ variable "namespace" {
 
 
 resource "kestra_flow" "dbtGitDockerPostgresRDS" {
+  keep_original_source = true
   flow_id    = "dbtGitDockerPostgresRDS"
   namespace = var.namespace
   content   = <<EOF

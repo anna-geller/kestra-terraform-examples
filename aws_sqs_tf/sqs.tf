@@ -39,6 +39,7 @@ resource "aws_sqs_queue" "queue" {
 }
 
 resource "kestra_flow" "sqsPublishMessage" {
+  keep_original_source = true
   flow_id    = "sqsPublishMessage"
   namespace = var.namespace
   content   = <<EOF
@@ -57,6 +58,7 @@ EOF
 }
 
 resource "kestra_flow" "sqsReactToMessage" {
+  keep_original_source = true
   flow_id    = "sqsReactToMessage"
   namespace = var.namespace
   content   = <<EOF

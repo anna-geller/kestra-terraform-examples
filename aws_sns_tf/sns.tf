@@ -42,12 +42,14 @@ resource "aws_sns_topic" "topic" {
 }
 
 resource "aws_sns_topic_subscription" "sms" {
+  keep_original_source = true
   endpoint  = var.phone_number
   protocol  = "sms"
   topic_arn = aws_sns_topic.topic.arn
 }
 
 resource "kestra_flow" "snsSendSMS" {
+  keep_original_source = true
   flow_id   = "snsSendSMS"
   namespace = var.namespace
   content   = <<EOF

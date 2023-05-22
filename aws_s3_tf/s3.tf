@@ -41,6 +41,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 
 
 resource "kestra_flow" "uploadToS3" {
+  keep_original_source = true
   flow_id    = "uploadToS3"
   namespace = var.namespace
   content   = <<EOF
