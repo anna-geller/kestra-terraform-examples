@@ -74,14 +74,13 @@ tasks:
     maxRecords: 1
   - id: print
     type: io.kestra.core.tasks.scripts.Bash
-    description: |
+    inputFiles:
+      msg.ion: "{{outputs.consumeMessage.uri}}"
     commands:
-      - echo received message stored in {{outputs.consumeMessage.uri}}
+      - cat msg.ion
 triggers:
   - id: sqs
     type: io.kestra.plugin.aws.sqs.Trigger
-    description: to activate it, set disabled to false
-    disabled: true
     accessKeyId: "{{envs.aws_access_key_id}}"
     secretKeyId: "{{envs.aws_secret_access_key}}"
     region: ${var.region}
