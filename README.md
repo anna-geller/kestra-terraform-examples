@@ -37,10 +37,10 @@ brew install hashicorp/tap/terraform
 
 # Write in code, deploy in one command
 
-Navigate to the relevant project e.g. [aws_s3_tf](aws_s3_tf) and initialize the relevant Terraform providers:
+Navigate to the relevant project e.g. [aws_s3_tf](aws_s3) and initialize the relevant Terraform providers:
 
 ```bash
-cd aws_s3_tf/
+cd aws_s3/
 terraform init
 ```
 

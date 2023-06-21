@@ -40,3 +40,4 @@ terraform.rc
 .DS_Store
 .env
 credentials.json
+**/.terraform.lock.hcl

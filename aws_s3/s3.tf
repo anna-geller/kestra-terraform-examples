@@ -6,16 +6,16 @@ terraform {
     }
 
     kestra = {
-      source = "kestra-io/kestra" # namespace of Kestra provider
-      version = "~> 0.7.0" # don't worry about 0.7.0 being displayed here - the provider works across the latest version as well
+      source  = "kestra-io/kestra" # namespace of Kestra provider
+      version = "~> 0.7.0"         # don't worry about 0.7.0 being displayed here - the provider works across the latest version as well
     }
 
   }
 }
 
 provider "aws" {
-    region = var.region
-    profile = "default"
+  region  = var.region
+  profile = "default"
 }
 
 provider "kestra" {
@@ -32,7 +32,7 @@ variable "namespace" {
 
 
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket = "declarative-orchestration"
+  bucket        = "declarative-orchestration"
   force_destroy = true # delete bucket when needed even if it's not empty
   tags = {
     project = "kestra"
@@ -40,11 +40,28 @@ resource "aws_s3_bucket" "s3_bucket" {
 }
 
 
+resource "kestra_flow" "uploadCsv" {
+  keep_original_source = true
+  flow_id              = "uploadCsv"
+  namespace            = var.namespace
+  content              = <<EOF
+id: uploadCsv
+namespace: dev
+tasks:
+  - id: csv
+    type: io.kestra.plugin.aws.s3.Upload
+    region: ${var.region}
+    bucket: ${aws_s3_bucket.s3_bucket.bucket}
+    from: myfile.csv
+    key: myfile.csv
+EOF  
+}
+
 resource "kestra_flow" "uploadToS3" {
   keep_original_source = true
-  flow_id    = "uploadToS3"
-  namespace = var.namespace
-  content   = <<EOF
+  flow_id              = "uploadToS3"
+  namespace            = var.namespace
+  content              = <<EOF
 id: uploadToS3
 namespace: ${var.namespace}
 inputs:
