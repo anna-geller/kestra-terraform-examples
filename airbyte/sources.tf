@@ -1,6 +1,6 @@
 resource "airbyte_source_pokeapi" "pokeapi" {
   configuration = {
-    pokemon_name = "pikachu"
+    pokemon_name = "psyduck"
     source_type  = "pokeapi"
   }
   name         = "PokeAPI"

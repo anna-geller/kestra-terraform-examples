@@ -39,12 +39,12 @@ resource "airbyte_connection" "dockerhub_devnull" {
 }
 
 
-resource "kestra_flow" "airbyteCloudSyncs" {
+resource "kestra_flow" "airbyte" {
   keep_original_source = true
-  flow_id              = "airbyteCloudSyncs"
+  flow_id              = "airbyte"
   namespace            = var.namespace
   content              = <<EOF
-id: airbyteCloudSyncs
+id: airbyte
 namespace: ${var.namespace}
 tasks:
   - id: airbyte
@@ -104,5 +104,10 @@ tasks:
                       extensions:
                         - parquet
                   target: dev
+triggers:
+  - id: every-minute
+    type: io.kestra.core.models.triggers.types.Schedule
+    cron: "*/1 * * * *"
+    disabled: true
 EOF
 }
